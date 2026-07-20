@@ -9,6 +9,14 @@
 #     -c:v libwebp -q:v 85 -compression_level 6 -start_number 0 assets/frames/%04d.webp
 assets/hero.mp4
 
+# Master video files for the AI viral ad case study. The web-encoded copies
+# live in assets/work/ai-viral-ad/videos/ (1280px, crf 24) and are committed;
+# these masters stay local. Re-encode with:
+#   ffmpeg -i <master> -vf "scale='min(1280,iw)':-2" -c:v libx264 -crf 24 \
+#     -preset slow -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart out.mp4
+assets/work/ai-viral-ad/*.mp4
+!assets/work/ai-viral-ad/videos/
+
 # OS / editor cruft
 Thumbs.db
 .DS_Store

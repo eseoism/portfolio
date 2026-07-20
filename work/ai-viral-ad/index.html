@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI VIDEO — EUNSEO JEONG®</title>
+<meta name="description" content="AI로 기획·생성·편집한 영상 포트폴리오. 2026 무신사 무진장 공모전 시리즈 3편과 제품 광고 2편. Higgsfield · Seedance · Kling">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E✳%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Tokens lifted from the handoff's hashcorp design system, inlined so the page
+   carries no dependency on _ds_bundle.js. This case study keeps its own art
+   direction (black + Apple-ish blue) and does not load assets/site.css. */
+:root{
+  --primary:#0066cc;--primary-focus:#0071e3;--primary-on-dark:#2997ff;
+  --canvas:#fff;--canvas-parchment:#f5f5f7;
+  --surface-tile-1:#272729;--surface-tile-2:#2a2a2c;--surface-black:#000;
+  --surface-chip-translucent:rgba(210,210,215,.64);
+  --ink:#1d1d1f;--body-muted:#ccc;--ink-muted-80:#333;--ink-muted-48:#7a7a7a;
+  --hairline:#e0e0e0;
+  --font-display:system-ui,-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
+  --font-text:system-ui,-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
+  --card-w:480px;--card-h:270px;--radius:640px;
+}
+html,body{margin:0;padding:0;background:#000}
+body{font-family:var(--font-text);color:#fff}
+a{color:var(--primary)}a:hover{color:var(--primary-focus)}
+::selection{background:rgba(41,151,255,.3)}
+:focus-visible{outline:2px solid var(--primary-on-dark);outline-offset:3px}
+
+nav.top{background:var(--surface-black);height:44px;display:flex;align-items:center;
+  justify-content:center;gap:34px;font-size:12px;letter-spacing:-.12px;position:sticky;top:0;z-index:50}
+nav.top a{color:rgba(255,255,255,.8);text-decoration:none}
+nav.top a:hover{color:#fff}
+nav.top a.brand{color:#fff;font-weight:600;font-size:14px}
+nav.top a.back{color:var(--ink-muted-48)}
+
+#gallery{height:calc(100vh - 44px);min-height:560px;position:relative;overflow:hidden}
+.stage{flex:1;position:relative;perspective:2000px}
+.ring{position:absolute;inset:0;transform-style:preserve-3d}
+.card{position:absolute;left:50%;top:50%;width:var(--card-w);height:var(--card-h);
+  margin-left:calc(var(--card-w)/-2);margin-top:calc(var(--card-h)/-2);
+  transition:opacity .3s linear}
+.card button{position:relative;width:100%;height:100%;border:0;padding:0;border-radius:8px;
+  overflow:hidden;background:var(--surface-tile-1);cursor:pointer;display:block}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.play span{width:60px;height:60px;border-radius:50%;background:var(--surface-chip-translucent);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  display:inline-flex;align-items:center;justify-content:center}
+
+.iconbtn{width:44px;height:44px;border-radius:50%;border:0;cursor:pointer;
+  background:var(--surface-chip-translucent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  display:inline-flex;align-items:center;justify-content:center;transition:transform .2s}
+.iconbtn:hover{transform:scale(1.06)}
+.iconbtn:active{transform:scale(.94)}
+.nav-l{position:absolute;left:24px;top:50%;transform:translateY(-50%);z-index:10}
+.nav-r{position:absolute;right:24px;top:50%;transform:translateY(-50%);z-index:10}
+
+.badge{font-size:12px;font-weight:600;color:var(--primary-on-dark);
+  border:1px solid rgba(41,151,255,.45);border-radius:9999px;padding:4px 12px}
+.chip{font-size:12px;color:rgba(255,255,255,.85);background:var(--surface-tile-2);
+  border:1px solid rgba(255,255,255,.12);border-radius:9999px;padding:5px 12px}
+.textlink{background:none;border:0;padding:0;font-size:14px;color:var(--primary-on-dark);cursor:pointer;font-family:inherit}
+.textlink:hover{color:var(--primary-focus)}
+
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:100;
+  display:flex;align-items:center;justify-content:center;padding:40px}
+#lightbox[hidden]{display:none}
+.lb-inner{width:min(1100px,100%,calc((100vh - 300px) * 16 / 9))}
+.lb-frame{position:relative;aspect-ratio:16/9;background:var(--surface-black);border-radius:8px;overflow:hidden}
+.lb-frame video{width:100%;height:100%;display:block;background:#000;cursor:pointer}
+/* Centred play/pause, mirroring the play chip on the gallery cards. Sits above
+   the video but leaves the native controls at the bottom clickable. */
+.lb-toggle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:60px;height:60px;border-radius:50%;border:0;padding:0;cursor:pointer;z-index:2;
+  background:var(--surface-chip-translucent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:opacity .25s,transform .2s}
+.lb-toggle svg{width:22px;height:22px}
+.lb-toggle:hover{transform:translate(-50%,-50%) scale(1.06)}
+.lb-toggle:active{transform:translate(-50%,-50%) scale(.94)}
+/* fade out while playing, back on hover or pause */
+.lb-toggle[data-playing="1"]{opacity:0}
+.lb-frame:hover .lb-toggle,.lb-toggle:focus-visible{opacity:1}
+
+@media (max-width:900px){
+  :root{--card-w:300px;--card-h:169px;--radius:360px}
+  #gallery{height:auto;padding-bottom:48px}
+  .stage{height:60vh;min-height:320px}
+  nav.top{gap:18px;font-size:11px}
+  .nav-l{left:8px}.nav-r{right:8px}
+  #lightbox{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  .card,.iconbtn{transition:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a class="back" href="../../#work">← Works</a>
+  <a class="brand" href="#gallery">Eunseo Jeong</a>
+  <a href="#gallery">Works</a>
+  <a href="#process">Process</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<section id="gallery">
+  <div style="height:100%;display:flex;flex-direction:column">
+    <header style="text-align:center;padding:48px 24px 0;position:relative;z-index:10">
+      <h1 style="font-family:var(--font-display);font-size:48px;font-weight:700;letter-spacing:-.03em;margin:0;color:#fff">AI VIDEO</h1>
+      <p style="font-size:19px;font-weight:300;color:var(--body-muted);margin:12px 0 0;letter-spacing:-.01em">스크롤해서 갤러리를 돌려보세요 — © 2026 Eunseo Jeong. All rights reserved.</p>
+    </header>
+
+    <div class="stage">
+      <div class="ring" id="ring"></div>
+      <div class="nav-l"><button class="iconbtn" id="prev" aria-label="이전 영상"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button></div>
+      <div class="nav-r"><button class="iconbtn" id="next" aria-label="다음 영상"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button></div>
+    </div>
+
+    <div style="text-align:center;padding:0 24px 40px;position:relative;z-index:10">
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+        <span class="badge" id="capBadge"></span>
+        <span style="font-size:12px;color:var(--ink-muted-48)" id="capCounter"></span>
+      </div>
+      <h2 id="capTitle" style="font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin:10px 0 6px;color:#fff"></h2>
+      <button class="textlink" id="openCurrent">크게 보기 ›</button>
+    </div>
+  </div>
+</section>
+
+<section id="process" style="background:var(--canvas-parchment);color:var(--ink);padding:80px 24px;position:relative;z-index:20">
+  <div style="max-width:980px;margin:0 auto">
+    <h2 style="font-family:var(--font-display);font-size:40px;font-weight:700;letter-spacing:-.02em;margin:0 0 8px;text-align:center">제작 프로세스.</h2>
+    <p style="font-size:17px;font-weight:300;color:var(--ink-muted-48);text-align:center;margin:0 0 48px">From prompt to final cut.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">
+      <div style="background:var(--canvas);border:1px solid var(--hairline);border-radius:18px;padding:24px">
+        <p style="font-size:12px;font-weight:600;color:var(--primary);margin:0 0 8px">01 — Concept</p>
+        <h3 style="font-size:19px;font-weight:600;letter-spacing:-.01em;margin:0 0 8px">기획 · 프롬프트 설계</h3>
+        <p style="font-size:14px;line-height:1.5;color:var(--ink-muted-80);margin:0">스토리보드와 샷 리스트를 먼저 만들고, 장면별 프롬프트와 레퍼런스 이미지를 설계합니다.</p>
+      </div>
+      <div style="background:var(--canvas);border:1px solid var(--hairline);border-radius:18px;padding:24px">
+        <p style="font-size:12px;font-weight:600;color:var(--primary);margin:0 0 8px">02 — Generate</p>
+        <h3 style="font-size:19px;font-weight:600;letter-spacing:-.01em;margin:0 0 8px">AI 생성</h3>
+        <p style="font-size:14px;line-height:1.5;color:var(--ink-muted-80);margin:0">Higgsfield 이미지생성 도구로 키비주얼과 레퍼런스 프레임을 만들고 Seedance 2.0, Kling 3.0으로 영상화합니다. 원하는 비주얼을 얻기 위해 수십 회의 반복 생성을 거치고 있습니다.</p>
+      </div>
+      <div style="background:var(--canvas);border:1px solid var(--hairline);border-radius:18px;padding:24px">
+        <p style="font-size:12px;font-weight:600;color:var(--primary);margin:0 0 8px">03 — Post</p>
+        <h3 style="font-size:19px;font-weight:600;letter-spacing:-.01em;margin:0 0 8px">편집 · 후반 작업</h3>
+        <p style="font-size:14px;line-height:1.5;color:var(--ink-muted-80);margin:0">Premiere Pro와 Capcut으로 컷 편집, 컬러, 사운드 디자인까지 마무리합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" style="background:#000;text-align:center;padding:96px 24px;position:relative;z-index:20">
+  <h2 style="font-family:var(--font-display);font-size:40px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;color:#fff">프로젝트를 함께 만들어요.</h2>
+  <p style="font-size:17px;font-weight:300;color:var(--body-muted);margin:0 0 32px">브랜드 필름, 광고, 시리즈 — 어떤 형식이든 문의 주세요.</p>
+  <a href="mailto:najes01@naver.com" style="display:inline-block;background:var(--primary);color:#fff;font-size:17px;font-weight:400;border-radius:9999px;padding:12px 28px;text-decoration:none">이메일 보내기</a>
+  <p style="font-size:12px;color:var(--ink-muted-48);margin:48px 0 0">© 2026 정은서 · All films generated &amp; directed by 정은서</p>
+</section>
+
+<div id="lightbox" hidden role="dialog" aria-modal="true" aria-label="영상 재생">
+  <div class="lb-inner">
+    <div style="display:flex;justify-content:flex-end;padding-bottom:12px">
+      <button class="iconbtn" id="lbClose" aria-label="닫기"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="lb-frame" id="lbFrame">
+      <button class="lb-toggle" id="lbToggle" aria-label="일시정지">
+        <svg viewBox="0 0 24 24" fill="var(--ink)" aria-hidden="true"><path id="lbToggleIcon" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+      </button>
+    </div>
+    <div style="padding:20px 4px 0;color:#fff">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span class="badge" id="lbBadge"></span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="lbTools"></div>
+      </div>
+      <h3 style="font-family:var(--font-display);font-size:21px;font-weight:600;letter-spacing:-.01em;margin:12px 0 6px">
+        <span id="lbTitle"></span>
+      </h3>
+      <p style="font-size:14px;line-height:1.6;color:var(--body-muted);margin:0" id="lbBehind"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var A = '../../assets/work/ai-viral-ad/';
+  var VIDEOS = [
+    { poster: A + 'poster-ep1.webp', src: A + 'videos/ep1.mp4', badge: '시리즈 · Ep.1',
+      title: '2026 무신사 무진장 공모전 — EP 1. 그래 알겠어',
+      tools: ['Higgsfield', 'Seedance2.0', 'Capcut'],
+      behind: '중독성있는 삼행시와 아이코닉한 오렌지 쇼핑백 마스크로, 무신사 무진장 세일을 유쾌하게 표현한 AI 광고 시리즈물 입니다.' },
+    { poster: A + 'poster-ep2.webp', src: A + 'videos/ep2.mp4', badge: '시리즈 · Ep.2',
+      title: '2026 무신사 무진장 공모전 — EP 2. 가는 날이 장날이니까',
+      tools: ['Higgsfield', 'Kling 3.0', 'Seedance 2.0'],
+      behind: '중독성있는 삼행시와 아이코닉한 오렌지 쇼핑백 마스크로, 무신사 무진장 세일을 유쾌하게 표현한 AI 광고 시리즈물 입니다.' },
+    { poster: A + 'poster-ep3.webp', src: A + 'videos/ep3.mp4', badge: '시리즈 · Ep.3',
+      title: '2026 무신사 무진장 공모전 — EP 3. 아는 개 산책',
+      tools: ['Higgsfield', 'Kling 3.0', 'Seedance 2.0', 'Capcut'],
+      behind: '중독성있는 삼행시와 아이코닉한 오렌지 쇼핑백 마스크로, 무신사 무진장 세일을 유쾌하게 표현한 AI 광고 시리즈물 입니다.' },
+    { poster: A + 'poster-ad1.webp', src: A + 'videos/ad1.mp4', badge: '광고',
+      title: 'AI 제품 광고 — 멜라토닌 젤리 상업광고 케이스 스터디',
+      tools: ['Higgsfield', 'Kling 3.0', 'Seedance 2.0'],
+      behind: '멜라토닌 젤리 제품을 주제로 AI광고 영상을 기획했으며, 나레이션, 브랜딩 및 제품디자인, AI 영상제작을 직접 진행했습니다.' },
+    { poster: A + 'poster-ad2.webp', src: A + 'videos/ad2.mp4', badge: '광고',
+      title: 'AI 제품 광고 — 트러블패치 상업광고 케이스 스터디',
+      tools: ['Higgsfield', 'Kling 3.0', 'Seedance 2.0'],
+      behind: '트러블 패치 제품을 주제로 AI광고 영상을 기획했으며, 나레이션, 브랜딩 및 제품디자인, AI 영상제작을 직접 진행했습니다.' }
+  ];
+
+  var N = VIDEOS.length, PER = 360 / N;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var ring = document.getElementById('ring');
+  var stage = document.getElementById('gallery');
+  var rotation = 0, target = 0, raf = null, snapT = null;
+
+  // ---- build the ring -----------------------------------------------------
+  var cards = VIDEOS.map(function (v, i) {
+    var wrap = document.createElement('div');
+    wrap.className = 'card';
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    var img = document.createElement('img');
+    img.src = v.poster; img.alt = v.title; img.loading = i === 0 ? 'eager' : 'lazy'; img.decoding = 'async';
+    btn.appendChild(img);
+    var play = document.createElement('div');
+    play.className = 'play';
+    play.innerHTML = '<span><svg width="22" height="22" viewBox="0 0 24 24" fill="var(--ink)"><path d="M8 5.5v13l11-6.5z"/></svg></span>';
+    btn.appendChild(play);
+    btn.addEventListener('click', function () {
+      if (i === frontIndex()) openLightbox(i);
+      else rotateToIndex(i);
+    });
+    wrap.appendChild(btn);
+    ring.appendChild(wrap);
+    return { wrap: wrap, btn: btn, play: play, angle: i * PER };
+  });
+
+  function frontIndex() {
+    return ((Math.round(-rotation / PER) % N) + N) % N;
+  }
+
+  function render() {
+    ring.style.transform = 'rotateY(' + rotation + 'deg)';
+    var front = frontIndex();
+    cards.forEach(function (c, i) {
+      var rel = ((c.angle + rotation) % 360 + 360) % 360;
+      var norm = Math.abs(rel > 180 ? 360 - rel : rel);
+      c.wrap.style.transform = 'rotateY(' + c.angle + 'deg) translateZ(var(--radius))';
+      c.wrap.style.opacity = Math.max(0.25, 1 - norm / 180);
+      var isFront = i === front;
+      c.play.style.display = isFront ? 'flex' : 'none';
+      c.btn.setAttribute('aria-label', VIDEOS[i].title + (isFront ? ' 재생' : ' 앞으로 가져오기'));
+    });
+    var v = VIDEOS[front];
+    document.getElementById('capBadge').textContent = v.badge;
+    document.getElementById('capCounter').textContent = (front + 1) + ' / ' + N;
+    document.getElementById('capTitle').textContent = v.title;
+  }
+
+  function animate() {
+    if (reduced) { rotation = target; render(); return; }
+    if (raf) return;
+    raf = requestAnimationFrame(function tick() {
+      var diff = target - rotation;
+      if (Math.abs(diff) < 0.05) { rotation = target; raf = null; render(); return; }
+      rotation += diff * 0.14;
+      render();
+      raf = requestAnimationFrame(tick);
+    });
+  }
+
+  function rotateToIndex(i) {
+    var base = -i * PER;
+    target = base + Math.round((target - base) / 360) * 360;
+    animate();
+  }
+  function step(d) {
+    target = Math.round(target / PER) * PER - d * PER;
+    animate();
+  }
+
+  // ---- wheel scrubbing, snapping to the nearest card ----------------------
+  stage.addEventListener('wheel', function (e) {
+    if (!lb.hidden) return;
+    e.preventDefault();
+    target -= (Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX) * 0.12;
+    animate();
+    clearTimeout(snapT);
+    snapT = setTimeout(function () {
+      target = Math.round(target / PER) * PER;
+      animate();
+    }, 250);
+  }, { passive: false });
+
+  document.getElementById('prev').addEventListener('click', function () { step(-1); });
+  document.getElementById('next').addEventListener('click', function () { step(1); });
+  document.getElementById('openCurrent').addEventListener('click', function () { openLightbox(frontIndex()); });
+
+  // ---- lightbox -----------------------------------------------------------
+  var lb = document.getElementById('lightbox');
+  var lbFrame = document.getElementById('lbFrame');
+  var lbToggle = document.getElementById('lbToggle');
+  var lbToggleIcon = document.getElementById('lbToggleIcon');
+  var lbVideo = null;
+  var lastFocus = null;
+
+  var ICON_PAUSE = 'M7 5h3.5v14H7zM13.5 5H17v14h-3.5z';
+  var ICON_PLAY = 'M8 5.5v13l11-6.5z';
+
+  function syncToggle() {
+    var playing = lbVideo && !lbVideo.paused && !lbVideo.ended;
+    lbToggleIcon.setAttribute('d', playing ? ICON_PAUSE : ICON_PLAY);
+    lbToggle.setAttribute('aria-label', playing ? '일시정지' : '재생');
+    lbToggle.setAttribute('data-playing', playing ? '1' : '0');
+  }
+
+  function togglePlay() {
+    if (!lbVideo) return;
+    if (lbVideo.paused) { var p = lbVideo.play(); if (p) p.catch(function () {}); }
+    else lbVideo.pause();
+  }
+
+  // The <video> is built fresh per open and fully torn down on close, so a
+  // dying element can never reach shared UI.
+  function destroyVideo() {
+    if (!lbVideo) return;
+    var old = lbVideo;
+    lbVideo = null;
+    old.pause();
+    old.removeAttribute('src');
+    old.load();          // release the buffer
+    old.remove();
+  }
+
+  function buildVideo(src) {
+    var v = document.createElement('video');
+    v.controls = true;
+    v.playsInline = true;
+    v.preload = 'metadata';
+    v.src = src;
+    v.addEventListener('click', togglePlay);
+    v.addEventListener('play', syncToggle);
+    v.addEventListener('pause', syncToggle);
+    v.addEventListener('ended', syncToggle);
+    lbFrame.appendChild(v);
+    return v;
+  }
+
+  function openLightbox(i) {
+    var v = VIDEOS[i];
+    lastFocus = document.activeElement;
+    document.getElementById('lbBadge').textContent = v.badge;
+    document.getElementById('lbTitle').textContent = v.title;
+    document.getElementById('lbBehind').textContent = v.behind;
+    var tools = document.getElementById('lbTools');
+    tools.innerHTML = '';
+    v.tools.forEach(function (t) {
+      var s = document.createElement('span');
+      s.className = 'chip'; s.textContent = t;
+      tools.appendChild(s);
+    });
+    destroyVideo();
+    lbVideo = buildVideo(v.src);
+    lb.hidden = false;
+    document.body.style.overflow = 'hidden';
+    document.getElementById('lbClose').focus();
+    if (!reduced) { var p = lbVideo.play(); if (p) p.catch(function () {}); }
+    syncToggle();
+  }
+
+  function closeLightbox() {
+    lb.hidden = true;
+    destroyVideo();                   // always stops playback and audio
+    document.body.style.overflow = '';
+    if (lastFocus) lastFocus.focus();
+  }
+
+  lb.addEventListener('click', function (e) { if (e.target === lb) closeLightbox(); });
+  document.getElementById('lbClose').addEventListener('click', closeLightbox);
+  lbToggle.addEventListener('click', togglePlay);
+
+  window.addEventListener('keydown', function (e) {
+    if (!lb.hidden) {
+      if (e.key === 'Escape') { closeLightbox(); return; }
+      // Space / K pause-toggle, as long as focus is not on the close button
+      if ((e.key === ' ' || e.key === 'k') && lbVideo && document.activeElement !== document.getElementById('lbClose')) {
+        e.preventDefault();
+        togglePlay();
+      }
+      return;
+    }
+    if (e.key === 'ArrowLeft') step(-1);
+    else if (e.key === 'ArrowRight') step(1);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
