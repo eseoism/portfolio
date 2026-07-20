@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3D Clothing Design — EUNSEO JEONG®</title>
+<meta name="description" content="CLO3D로 제작한 3D 의류 디자인 포트폴리오. Outdoor, Menswear, Womenswear, Gorpcore 컬렉션.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E✳%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Full-viewport panel selector. Keeps the handoff's own art direction
+   (near-black + Apple blue), so it does not load assets/site.css. */
+html,body{margin:0;padding:0;background:#161617;height:100%;overflow:hidden}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Inter',sans-serif;color:#f5f5f7}
+a{color:#2997ff;text-decoration:none}
+a:hover{color:#2997ff;text-decoration:underline}
+:focus-visible{outline:2px solid #2997ff;outline-offset:2px}
+@keyframes panelIn{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
+
+.shell{width:100vw;height:100vh;display:flex;flex-direction:column;background:#161617;overflow:hidden}
+.topbar{height:44px;flex:0 0 auto;background:#000;display:flex;align-items:center;
+  justify-content:space-between;padding:0 24px;gap:16px}
+.stage{flex:1 1 auto;display:flex;align-items:stretch;gap:0;padding:0 40px 32px;min-height:0}
+
+.panel{position:relative;overflow:hidden;cursor:pointer;min-width:60px;border-radius:0;
+  background:#1d1d1f;border:1px solid rgba(255,255,255,.10);padding:0;
+  transition:flex 700ms cubic-bezier(.22,.61,.36,1),border-color 240ms ease;
+  animation:panelIn 500ms cubic-bezier(.22,.61,.36,1) both;flex:1 1 0%;z-index:1;
+  font:inherit;color:inherit;text-align:left;display:block}
+.panel[data-active="1"]{flex:0 1 auto;aspect-ratio:16/9;
+  border-color:rgba(245,245,247,.55);z-index:10}
+.layer{position:absolute;inset:0;background-position:center;background-repeat:no-repeat;
+  background-color:#161617;background-size:cover;
+  transition:opacity 500ms cubic-bezier(.22,.61,.36,1),filter 700ms ease}
+.panel[data-active="1"] .layer{background-size:100% 100%}
+.panel[data-dim="1"] .layer{filter:grayscale(28%) brightness(.72)}
+.shade{position:absolute;left:0;right:0;bottom:0;height:110px;pointer-events:none;
+  background:linear-gradient(to top,rgba(0,0,0,.72),rgba(0,0,0,0));
+  opacity:.5;transition:opacity 700ms ease}
+.panel[data-active="1"] .shade{opacity:1}
+.label{position:absolute;left:16px;bottom:14px;display:flex;align-items:baseline;gap:10px;
+  pointer-events:none;opacity:0;transform:translateX(20px);
+  transition:opacity 500ms ease 150ms,transform 500ms cubic-bezier(.22,.61,.36,1) 150ms}
+.panel[data-active="1"] .label{opacity:1;transform:translateX(0)}
+.thumbs{position:absolute;right:16px;bottom:14px;display:flex;gap:8px;
+  opacity:0;pointer-events:none;transition:opacity 500ms ease 150ms}
+.panel[data-active="1"] .thumbs{opacity:1;pointer-events:auto}
+.thumb{width:72px;aspect-ratio:16/9;flex:0 0 auto;cursor:pointer;padding:0;
+  background-size:cover;background-position:center;
+  border:1px solid rgba(255,255,255,.25);opacity:.65;
+  transition:opacity 240ms ease,border-color 240ms ease}
+.thumb[data-sel="1"]{border-color:#f5f5f7;opacity:1}
+.footer{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:32px;padding:0 40px 20px}
+
+@media (max-width:860px){
+  html,body{overflow:auto;height:auto}
+  .shell{height:auto;min-height:100vh}
+  .topbar{flex-wrap:wrap;height:auto;padding:10px 16px;gap:4px}
+  .stage{flex-direction:column;padding:0 16px 20px;gap:8px}
+  .panel{flex:0 0 auto;aspect-ratio:16/9}
+  .panel[data-active="1"]{flex:0 0 auto}
+  .footer{flex-direction:column;align-items:flex-start;gap:8px;padding:0 16px 20px}
+  .thumb{width:52px}
+}
+@media (prefers-reduced-motion:reduce){
+  .panel,.layer,.shade,.label,.thumbs,.thumb{transition:none;animation:none}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="topbar">
+    <a href="../../#work" style="font-size:12px;color:#86868b">← Works</a>
+    <span style="font-size:13px;font-weight:600;letter-spacing:-.01em;color:#f5f5f7">Jeong Eun Seo</span>
+    <span style="font-size:12px;color:#86868b">3D clothing designer · Based in Seoul</span>
+    <a href="mailto:najes01@naver.com" style="font-size:12px;color:#2997ff">najes01@naver.com</a>
+  </div>
+
+  <div style="flex:0 0 auto;display:flex;align-items:baseline;justify-content:space-between;padding:28px 40px 18px;gap:16px;flex-wrap:wrap">
+    <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap">
+      <h1 id="activeTitle" style="margin:0;font-size:32px;font-weight:700;letter-spacing:-.02em;color:#f5f5f7"></h1>
+      <span id="activeSub" style="font-size:14px;color:#86868b"></span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:20px">
+      <span id="counter" style="font-size:13px;color:#86868b;font-variant-numeric:tabular-nums"></span>
+      <span style="font-size:12px;color:#6e6e73">CLO3D · Photoshop · Midjourney · GPT</span>
+    </div>
+  </div>
+
+  <div class="stage" id="stage"></div>
+
+  <div class="footer">
+    <span style="font-size:12px;color:#6e6e73;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">My work explores how virtual garments can speak to real-world needs. · 가상 의류가 실제의 필요에 답하는 방식을 탐구합니다.</span>
+    <span style="font-size:12px;color:#6e6e73;flex:0 0 auto;white-space:nowrap">← → 키로 페이지 이동 · 패널 클릭으로 컬렉션 전환</span>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var A = '../../assets/work/3d-clothing-design/';
+  var DIM_INACTIVE = true;   // the handoff's dimInactive prop, default true
+
+  // [title, subtitle, page numbers, per-page labels]
+  var META = [
+    ['Introduction', '3d clothing designer · Jeong Eun Seo', [1, 2], ['Hero', 'Index']],
+    ['Outdoor', 'fisherman father', [3, 4, 5, 6], ['Cover', 'Goretex Jacket', 'Lifetech Details', 'Belay Pants']],
+    ['Menswear', 'city boy mood', [7, 8, 9, 10], ['Cover', 'Hooded Puffer Jacket', 'Denim Shirts', 'Leather Pants']],
+    ['Womenswear', 'contemporary', [11, 12, 13, 14], ['Cover', 'Herringbone Wool Coat', 'Sheer Knit Cardigan', 'Spray Washed T-Shirt']],
+    ['Gorpcore', 'where utility meets design', [15, 16, 17, 18], ['Cover', 'Technical Windbreaker', 'Functional Vest', 'Functional Shorts']]
+  ];
+
+  function pageSrc(n) { return A + 'page-' + String(n).padStart(2, '0') + '.webp'; }
+  function pad2(n) { return String(n).padStart(2, '0'); }
+
+  var active = 0, sub = 0;
+  var stage = document.getElementById('stage');
+  var panels = [];
+
+  // Two stacked layers per panel so the active image can cross-fade.
+  META.forEach(function (m, i) {
+    var title = m[0], pages = m[2];
+    var el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'panel';
+    el.style.animationDelay = (i * 45) + 'ms';
+    el.title = title;
+
+    var a = document.createElement('div'); a.className = 'layer';
+    var b = document.createElement('div'); b.className = 'layer';
+    var shade = document.createElement('div'); shade.className = 'shade';
+
+    var label = document.createElement('div');
+    label.className = 'label';
+    label.innerHTML = '<span style="font-size:11px;color:#a1a1a6;font-variant-numeric:tabular-nums;letter-spacing:.06em">' +
+      pad2(i + 1) + '</span><span style="font-size:15px;font-weight:600;color:#f5f5f7;letter-spacing:-.01em;white-space:nowrap"></span>';
+    label.lastChild.textContent = title;
+
+    var thumbs = document.createElement('div');
+    thumbs.className = 'thumbs';
+    var thumbEls = pages.map(function (n, j) {
+      var t = document.createElement('button');
+      t.type = 'button';
+      t.className = 'thumb';
+      t.style.backgroundImage = 'url("' + pageSrc(n) + '")';
+      t.setAttribute('aria-label', title + ' ' + (j + 1) + '페이지');
+      t.addEventListener('click', function (e) {
+        e.stopPropagation();
+        sub = j;
+        render();
+      });
+      thumbs.appendChild(t);
+      return t;
+    });
+
+    el.append(a, b, shade, label, thumbs);
+    el.addEventListener('click', function () {
+      if (active === i) return;
+      active = i; sub = 0;
+      render();
+    });
+    stage.appendChild(el);
+    panels.push({ el: el, a: a, b: b, thumbs: thumbEls, pages: pages, showA: true, cur: null });
+  });
+
+  function render() {
+    META.forEach(function (m, i) {
+      var p = panels[i], pages = m[2];
+      var isActive = i === active;
+      var src = pageSrc(isActive ? pages[sub] : pages[0]);
+
+      p.el.setAttribute('data-active', isActive ? '1' : '0');
+      p.el.setAttribute('data-dim', (!isActive && DIM_INACTIVE) ? '1' : '0');
+      p.el.setAttribute('aria-label', m[0] + ' 컬렉션' + (isActive ? ' (선택됨)' : ''));
+
+      if (isActive) {
+        // swap which layer is on top so the new page fades in over the old
+        if (p.cur !== src) {
+          if (p.cur === null) { p.a.style.backgroundImage = 'url("' + src + '")'; p.b.style.backgroundImage = 'url("' + src + '")'; }
+          else { p.showA = !p.showA; (p.showA ? p.a : p.b).style.backgroundImage = 'url("' + src + '")'; }
+          p.cur = src;
+        }
+        p.a.style.opacity = p.showA ? 1 : 0;
+        p.b.style.opacity = p.showA ? 0 : 1;
+      } else {
+        p.a.style.backgroundImage = 'url("' + src + '")';
+        p.a.style.opacity = 1;
+        p.b.style.opacity = 0;
+        p.cur = null; p.showA = true;
+      }
+
+      p.thumbs.forEach(function (t, j) {
+        t.setAttribute('data-sel', (isActive && j === sub) ? '1' : '0');
+        t.tabIndex = isActive ? 0 : -1;
+      });
+    });
+
+    var m = META[active];
+    document.getElementById('activeTitle').textContent = m[0];
+    document.getElementById('activeSub').textContent = sub === 0 ? m[1] : m[3][sub];
+    document.getElementById('counter').textContent = pad2(sub + 1) + ' / ' + pad2(m[2].length);
+  }
+
+  // Arrow keys walk pages, wrapping into the next/previous collection.
+  function len(i) { return META[i][2].length; }
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight') {
+      if (sub < len(active) - 1) sub++;
+      else { active = (active + 1) % META.length; sub = 0; }
+    } else if (e.key === 'ArrowLeft') {
+      if (sub > 0) sub--;
+      else { active = (active + META.length - 1) % META.length; sub = len(active) - 1; }
+    } else return;
+    e.preventDefault();
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
