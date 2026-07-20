@@ -1,0 +1,14 @@
+# Design handoff bundles — build inputs, not site content
+*handoff*.zip
+
+# Source video kept out of the repo.
+# hero.mp4 is the original 4K clip, superseded by hero1.mp4 and no longer
+# used to generate assets/frames/. Regenerate frames with:
+#   ffmpeg -i assets/hero1.mp4 \
+#     -vf "deband=1thr=0.02:2thr=0.02:3thr=0.02:range=16:blur=1,gradfun=strength=1.2:radius=16" \
+#     -c:v libwebp -q:v 85 -compression_level 6 -start_number 0 assets/frames/%04d.webp
+assets/hero.mp4
+
+# OS / editor cruft
+Thumbs.db
+.DS_Store
