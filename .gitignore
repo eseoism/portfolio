@@ -17,8 +17,9 @@ assets/hero.mp4
 assets/work/ai-viral-ad/*.mp4
 !assets/work/ai-viral-ad/videos/
 
-# Source cover art — the web-encoded copy lives at assets/cover-03.webp.
+# Source cover art — the web-encoded copies live at assets/cover-0N.webp.
 assets/커버3 수정.png
+assets/커버4.png
 
 # OS / editor cruft
 Thumbs.db
