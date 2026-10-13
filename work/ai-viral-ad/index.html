@@ -43,6 +43,9 @@ nav.top a.back{color:var(--ink-muted-48)}
 .card{position:absolute;left:50%;top:50%;width:var(--card-w);height:var(--card-h);
   margin-left:calc(var(--card-w)/-2);margin-top:calc(var(--card-h)/-2);
   transition:opacity .3s linear}
+/* 9:16 shortform cards keep the same height as the 16:9 cards so they still
+   read as part of the ring, just narrower instead of cropped. */
+.card.vertical{width:calc(var(--card-h) * .5625);margin-left:calc(var(--card-h) * -.28125)}
 .card button{position:relative;width:100%;height:100%;border:0;padding:0;border-radius:8px;
   overflow:hidden;background:var(--surface-tile-1);cursor:pointer;display:block}
 .card img{width:100%;height:100%;object-fit:cover;display:block}
@@ -70,7 +73,9 @@ nav.top a.back{color:var(--ink-muted-48)}
   display:flex;align-items:center;justify-content:center;padding:40px}
 #lightbox[hidden]{display:none}
 .lb-inner{width:min(1100px,100%,calc((100vh - 300px) * 16 / 9))}
+.lb-inner.vertical{width:min(420px,100%,calc((100vh - 300px) * 9 / 16))}
 .lb-frame{position:relative;aspect-ratio:16/9;background:var(--surface-black);border-radius:8px;overflow:hidden}
+.lb-inner.vertical .lb-frame{aspect-ratio:9/16}
 .lb-frame video{width:100%;height:100%;display:block;background:#000;cursor:pointer;object-fit:contain}
 /* Centred play/pause, mirroring the play chip on the gallery cards. Sits above
    the video but leaves the native controls at the bottom clickable. */
@@ -165,7 +170,7 @@ nav.top a.back{color:var(--ink-muted-48)}
 </section>
 
 <div id="lightbox" hidden role="dialog" aria-modal="true" aria-label="영상 재생">
-  <div class="lb-inner">
+  <div class="lb-inner" id="lbInner">
     <div style="display:flex;justify-content:flex-end;padding-bottom:12px">
       <button class="iconbtn" id="lbClose" aria-label="닫기"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
@@ -216,7 +221,7 @@ nav.top a.back{color:var(--ink-muted-48)}
       title: '2024 KHU LINC 3.0 바이럴 영상대회 수상작',
       tools: ['Premiere Pro', '촬영'],
       behind: '신생 뷰티 기업 아꾸아AKKUA의 바디스크럽 제품 홍보 목적으로 바이럴 영상 기획, 촬영, 편집에 참여하였으며, 우수상을 수상했습니다.' },
-    { poster: A + 'poster-ad4.webp', src: A + 'videos/ad4.mp4', badge: 'TikTok 숏폼',
+    { poster: A + 'poster-ad4.webp', src: A + 'videos/ad4.mp4', badge: 'TikTok 숏폼', vertical: true,
       title: 'POV : 여름 내내 태양에 구워졌는데 개학이 3주 남은 너',
       tools: ['Higgsfield', 'Capcut'],
       behind: '여름 바캉스로 손상된 피부를 위한, 프랑스의 rentrée 시즌을 고려한 K뷰티 진정루틴 POV 숏폼 코미디입니다.' }
@@ -232,7 +237,7 @@ nav.top a.back{color:var(--ink-muted-48)}
   // ---- build the ring -----------------------------------------------------
   var cards = VIDEOS.map(function (v, i) {
     var wrap = document.createElement('div');
-    wrap.className = 'card';
+    wrap.className = v.vertical ? 'card vertical' : 'card';
     var btn = document.createElement('button');
     btn.type = 'button';
     var img = document.createElement('img');
@@ -368,6 +373,7 @@ nav.top a.back{color:var(--ink-muted-48)}
     document.getElementById('lbBadge').textContent = v.badge;
     document.getElementById('lbTitle').textContent = v.title;
     document.getElementById('lbBehind').textContent = v.behind;
+    document.getElementById('lbInner').classList.toggle('vertical', !!v.vertical);
     var tools = document.getElementById('lbTools');
     tools.innerHTML = '';
     v.tools.forEach(function (t) {
